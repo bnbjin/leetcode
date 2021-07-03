@@ -150,3 +150,32 @@ class TestArray(unittest.TestCase):
         ]
         for c in cases:
             self.assertEqual(c['out'], findDisappearedNumbers(c['in']))
+
+    def test_max_profit(self):
+        '''
+        https://leetcode.com/explore/featured/card/top-interview-questions-easy/92/array/564/
+        动态规划，如何能确定最优的子问题结构呢？子问题边界是什么呢？
+        边界是每个local minimum和local maximum
+        '''
+
+        def maxProfit(prices):
+            i = 0
+            profit = 0
+
+            while i < len(prices)-1:
+                # 一开始是下坡的话，其实是可以被忽略掉的
+                while i < len(prices)-1 and prices[i] >= prices[i+1]:
+                    i += 1
+                lmin = prices[i]
+
+                while i < len(prices)-1 and prices[i] <= prices[i+1]:
+                    i += 1
+                lmax = prices[i]
+
+                profit += lmax - lmin
+
+            return profit
+
+        cases = [{'in': [7, 1, 5, 3, 6, 4], 'out': 7}]
+        for c in cases:
+            self.assertEqual(c['out'], maxProfit(c['in']))
