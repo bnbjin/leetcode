@@ -179,3 +179,38 @@ class TestArray(unittest.TestCase):
         cases = [{'in': [7, 1, 5, 3, 6, 4], 'out': 7}]
         for c in cases:
             self.assertEqual(c['out'], maxProfit(c['in']))
+
+    def test_intersection_of_two_arrays2(self):
+        '''
+        https://leetcode.com/problems/intersection-of-two-arrays-ii/solution/
+        查找两个字符串中都出现了的字符，包括多次重复的
+
+        思路A：先把更小字符串排序，然后迭代更长字符串，二分查是否在更小字符串中
+        时间复杂度：O[n*lg(n) + m*log(n)]
+
+        思路B：哈希
+
+        :return:
+        '''
+
+        def intersect(nums1, nums2):
+            longer = None
+            shorter = None
+            if len(nums1) > len(nums2):
+                longer = nums1
+                shorter = nums2
+            else:
+                longer = nums2
+                shorter = nums1
+
+            count = dict()
+            for s in shorter:
+                count[s] = count[s] + 1 if s in count.keys() else 1
+
+            result = []
+            for l in longer:
+                if l in count.keys() and count[l] != 0:
+                    result.append(l)
+                    count[l] -= 1
+
+            return result
