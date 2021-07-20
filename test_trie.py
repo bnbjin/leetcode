@@ -62,3 +62,42 @@ class TestTrie(unittest.TestCase):
 
         ms.insert('app', 2)
         self.assertEqual(5, ms.sum('ap'))
+
+    def test_replace_words(self):
+        '''
+        https://leetcode.com/explore/learn/card/trie/148/practical-application-i/1053/
+        '''
+
+        def replace_words(dictionary, sentence):
+            t = Trie()
+            for w in dictionary:
+                t.insert(w)
+
+            result = ""
+            for w in sentence.split():
+                pre = t.get_prefix(w)
+                if pre != "":
+                    result += pre
+                else:
+                    result += w
+                result += " "
+
+            result = result.rstrip()
+
+            return result
+
+        cases = [
+            {
+                'dic': ['catt', 'cat', 'bat', 'rat'],
+                'sentence': "the cattle was rattled by the battery",
+                'output': "the cat was rat by the bat",
+            }, {
+                'dic': ['ac', 'ab'],
+                'sentence': "it is abnormal that this solution is accepted",
+                'output': "it is ab that this solution is ac",
+            }
+        ]
+
+        for c in cases:
+            self.assertEqual(c['output'],
+                             replace_words(c['dic'], c['sentence']))

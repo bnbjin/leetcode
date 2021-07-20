@@ -37,3 +37,21 @@ class Trie:
             sub_tree = sub_tree[c]
 
         return True
+
+
+    def get_prefix(self, word: str) -> str:
+        sub_tree = self.root
+        result = ""
+
+        for c in word:
+            if c in sub_tree.keys():
+                result += c
+            else:
+                return ""
+
+            sub_tree = sub_tree[c]
+
+            if 'word' in sub_tree.keys() and sub_tree['word'] is True:
+                break
+
+        return result
