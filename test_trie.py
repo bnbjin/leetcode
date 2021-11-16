@@ -1,6 +1,12 @@
 import unittest
 from trie import Trie
 
+class TrieNode:
+    def __init__(self):
+        self.children = {}
+        self.is_end = False
+        self.data = None
+        self.rank = 0
 
 class MapSum:
     '''

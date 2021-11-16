@@ -1,77 +1,15 @@
 from collection import defaultdict
 
 
+class TrieNode:
+    def __init__(self):
+        self.children = {}
+        self.is_end = False
+        self.data = None
+        self.rank = 0
+
+
 class ACTrie:
-
-    def __init__(self):
-        self.root = dict()
-
-
-    def insert(self, word: str, order: int) -> None:
-        if len(word) == 0:
-            return
-
-        sub_tree = self.root
-
-        for c in word:
-            if c not in sub_tree.keys():
-                sub_tree[c] = dict()
-
-            sub_tree = sub_tree[c]
-
-        sub_tree['order'] = order
-
-
-    def startswith(self, prefix: str) -> List[int]:
-        result = []
-
-        sub_tree = self.root
-        for c in prefix:
-            if c not in sub_tree.keys():
-                return []
-            sub_tree = sub_tree[c]
-
-        result = self._traverse(sub_tree)
-
-        return result
-
-
-    def _traverse(self, root: dict) -> List[int]:
-        result = []
-
-        for branch in root.keys():
-            if branch == 'order':
-                result.append(root['order'])
-            else:
-                result.append(*self._traverse(root[branch]))
-
-        return result
-
-
-class bst_node:
-
-    def __init__(self):
-        self.left = None
-        self.right = None
-        self.val = None
-
-
-class red_black_tree:
-
-    def __init__(self):
-        self.root = defaultdict(defaultdict)
-
-    def left_rotate(self, sub_tree):
-        x = sub_tree
-        y = x['right']
-        x['right'] = y['left']
-
-        if y['left'] is not None:
-            y['left']['parent'] = x
-
-
-
-class AutocompleteSystem:
     '''
     https://leetcode.com/explore/learn/card/trie/148/practical-application-i/1054/
 
@@ -84,14 +22,50 @@ class AutocompleteSystem:
 
     input需要维持档期啊未结束的输入，保存缓存
     input接收到#的时候，需要走完全不同的逻辑路径
+
+    PS: 当前实现并未如上述作相关优化实现，而是每次都DFS找
+    PS: 当前实现未经测试
     '''
 
-    def __init__(self, sentence: List[str], times: List[int]):
-        self.trie = ACTrie()
+    def __init__(self, sentences, times):
+        self.root = TrieNode()
+        self.keyword = ""
+        for i, sentence in enumerate(sentences):
+            self.add_record(sentence, times[i])
 
-        for i, w in enumerate(sentence):
-            self.trie.insert(w, i)
+    def add_record(self, sentence, times):
+        node = self.root
+        for char in sentence:
+            if char not in node.children:
+                node.children[c] = TrieNode()
+            node = node.children[c]
+        node.is_end = True
+        node.data = sentence
+        node.rank += times
 
+    def dfs(self, root):
+        result = []
+        if root:
+            if root.is_end:
+                result.append((root.rank, root.data))
+            for child in root.children:
+                result.extend(self.dfs(root.children[child]))
+        return result
 
-    def input(self, c: str) -> List[str]:
-        pass
+    def search(self, sentence):
+        node = self.root
+        for char in sentence:
+            if char not in node.children:
+                return []
+            node = node.children[char]
+        return self.dfs(node)
+
+    def input(self, char):
+        results = []
+        if char != '#':
+            self.keyword += c
+            results = self.search(self.keyword)
+        else:
+            self.add_record(self.keyword, 1)
+            self.keyword = ""
+        return [item[1] for item in sorted(results, reverse=True)][:3]
